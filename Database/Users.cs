@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 
 namespace Travel_Express.Database
 {
