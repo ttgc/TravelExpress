@@ -4,23 +4,30 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Liste des Trajets disponibles</h1>
 <form asp-controller="TravelRegistery" asp-action="Index" method="get">
     <div class="row">
         <div class="col-12 col-md-6">
-            <label for="from">De</label>
+            <label for="startCity">De</label>
             <input type="text" name="startCity" id="startCity" class="form-control" placeholder="Ville de départ">
         </div>
 
         <div class="col-12 col-md-6">
-            <label for="to">A</label>
+            <label for="endCity">A</label>
             <input type="text" name="endCity" id="endCity" class="form-control" placeholder="Ville de départ">
         </div>
     </div>
     <br />
     <div class="row">
         <div class="col-12">
-            <input type="datetime" name="startTime" id="startTime" class="form-control">
+            <label for="startTime">Le</label>
+            <input type="date" name="startTime" id="startTime" class="form-control">
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-12" style="text-align: center;">
+            <button name="submit" id="submit" type="submit" class="btn btn-primary">Search</button>
         </div>
     </div>
 </form>
