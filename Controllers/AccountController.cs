@@ -29,12 +29,13 @@ namespace Travel_Express.Controllers
             _context = context;
         }
 
-        // go to the sign in page
+        // go to the sign up page
         public IActionResult Signup()
         {
             return View();
         }
 
+        //go to signup success page
         public IActionResult SignupSuccess()
         {
             return View();

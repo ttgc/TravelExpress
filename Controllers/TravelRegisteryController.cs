@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Travel_Express.Database;
+using Travel_Express.Models;
 
 namespace Travel_Express.Controllers
 {
@@ -15,6 +18,41 @@ namespace Travel_Express.Controllers
         public TravelRegisteryController(Travel_Express.Database.Context context)
         {
             _context = context;
+        }
+
+        // GET: TravelRegisteryController
+        public IActionResult Index(string startCity, string endCity, DateTime? startTime)
+        {
+            int occupiedSeats = _context.Booking.Sum(q => q.Seats).Value;
+            IQueryable<Travel> query = _context.Travel.Where(
+                s => s.Seats > occupiedSeats
+            );
+
+            if (startTime.HasValue) query = query.Where(s => s.TimeStart.Value >= startTime.Value);
+            if (!String.IsNullOrEmpty(startCity))
+            {
+                query = query.Where(s => s.FromNavigation.City.ToLower() == startCity.ToLower());
+            }
+            if (!String.IsNullOrEmpty(endCity))
+            {
+                query = query.Where(s => s.ToNavigation.City.ToLower() == endCity.ToLower());
+            }
+
+            return View(
+                query.Select(s => new TravelListModel() {
+                    AvailableSeats = s.Seats.Value - occupiedSeats, TotalSeats = s.Seats.Value,
+                    Driver = s.Driver, StartTime = s.TimeStart.Value, EndTime = s.TimeEnd.Value,
+                    From = $"{s.FromNavigation.Number.GetValueOrDefault(0)} {s.FromNavigation.Street}\n{s.FromNavigation.Complement}\n{s.FromNavigation.PostalCode} {s.FromNavigation.City}\n({s.FromNavigation.State}) {s.FromNavigation.Country}",
+                    To = $"{s.ToNavigation.Number.GetValueOrDefault(0)} {s.ToNavigation.Street}\n{s.ToNavigation.Complement}\n{s.ToNavigation.PostalCode} {s.ToNavigation.City}\n({s.ToNavigation.State}) {s.ToNavigation.Country}",
+                    ID = s.IdTravel
+                }).ToList()
+            );
+        }
+
+        // GET: TravelRegisteryController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
         }
 
         [Authorize]
