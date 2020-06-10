@@ -32,6 +32,10 @@ namespace Travel_Express.Database
 
                 entity.Property(e => e.IdAddress).HasColumnName("id_address");
 
+                entity.Property(e => e.City)
+                    .HasColumnName("city")
+                    .HasMaxLength(25);
+
                 entity.Property(e => e.Complement)
                     .HasColumnName("complement")
                     .HasMaxLength(100);
