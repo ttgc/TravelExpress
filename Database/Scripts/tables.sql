@@ -16,6 +16,7 @@ CREATE TABLE public.Address(
 	street					 VARCHAR (100) ,
 	complement			 VARCHAR (100) ,
 	postal_code			 VARCHAR (10)  ,
+	city						 VARCHAR (25)  ,
 	state						 VARCHAR (25)  ,
 	country				   VARCHAR (25)  ,
 	CONSTRAINT prk_constraint_address PRIMARY KEY (id_address)
