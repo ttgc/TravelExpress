@@ -35,6 +35,11 @@ namespace Travel_Express.Controllers
             return View();
         }
 
+        public IActionResult SignupSuccess()
+        {
+            return View();
+        }
+
         // go to the log in page
         public IActionResult Login()
         {
@@ -88,11 +93,11 @@ namespace Travel_Express.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); //success
             }
             else
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Login"); //error
             }
         }
 
@@ -128,10 +133,10 @@ namespace Travel_Express.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("SignupSuccess");
                 }
             }
-            return RedirectToAction("Login");
+            return RedirectToAction("Signup");
         }
 
         public string EncodePassword(string password)

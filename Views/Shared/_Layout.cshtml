@@ -30,13 +30,16 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Connexion</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Signup">Créer un compte</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Signup">S'inscrire</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Preferences" asp-action="MyAccount">Mon compte</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="TravelRegistery" asp-action="RegisterTravel">Nouveau voyage</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Déconnexion</a>
