@@ -27,11 +27,11 @@ namespace Travel_Express.Controllers
         [Authorize]
         public IActionResult MyAccount()
         {
-            return View();
+            return View(GetPrefs());
         }
 
         // GET: return the current account preferences
-        public async Task<Preferences> GetPrefs()
+        public Preferences GetPrefs()
         {
             string id = UserEmail();
             if (id == null)
@@ -39,20 +39,21 @@ namespace Travel_Express.Controllers
                 return null;
             }
 
-            var users = await _context.Users.FindAsync(id);
+            var users = _context.Users.Find(id);
             if (users == null)
             {
                 return null;
             }
-            return new Preferences()
+            Preferences p = new Preferences()
             {
-                AcceptDeviation = (bool)users.AcceptDeviation,
-                AcceptEveryone = (bool)users.AcceptEveryone,
-                AcceptMusic = (bool)users.AcceptMusic,
-                AcceptPet = (bool)users.AcceptPet,
-                AcceptSmoke = (bool)users.AcceptSmoke,
-                AcceptTalking = (bool)users.AcceptTalking,
+                AcceptDeviation = users.AcceptDeviation.GetValueOrDefault(),
+                AcceptEveryone = users.AcceptEveryone.GetValueOrDefault(),
+                AcceptMusic = users.AcceptMusic.GetValueOrDefault(),
+                AcceptPet = users.AcceptPet.GetValueOrDefault(),
+                AcceptSmoke = users.AcceptSmoke.GetValueOrDefault(),
+                AcceptTalking = users.AcceptTalking.GetValueOrDefault(),
             };
+            return p;
         }
 
         // POST: Users/Edit/5
