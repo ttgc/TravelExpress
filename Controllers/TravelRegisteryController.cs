@@ -54,6 +54,33 @@ namespace Travel_Express.Controllers
         {
             return View();
         }
+        [Authorize]
+        public ActionResult Book(int id)
+        {
+            Booking book = new Booking();
+            book.Author = User.Identity.Name;
+            book.IdTravel = id;
+            book.Seats = 1;
+            book.Pending = true;
+            _context.Add(book);
+            bool fail = true;
+            try { 
+                _context.SaveChanges();
+                fail = false;
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                
+            }
+
+            
+            
+            if (!fail) ViewData["Message"] = "Votre voyage a bien été réservé!";
+            else ViewData["Message"] = "Vous ne pouvez pas reservé plusieurs fois le mêm voyage!";
+            
+            return View();
+        }
+
 
         [Authorize]
         public IActionResult RegisterTravel()
