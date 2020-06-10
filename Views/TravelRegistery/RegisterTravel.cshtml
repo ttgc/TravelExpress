@@ -14,12 +14,12 @@
 
 
 
-
+@model Travel_Express.Models.NewTravelModel
 <form method="post"  asp-route="RegisterTravel">
     <div class="Start">
         <label for="starting_street">Starting Point: </label><br />
         Addresse de Départ:<br />
-        <input type="text" name="starting_street" id="starting_street" maxlength="100" /><br />
+        <input asp-for="FromStreet" type="text" name="starting_street" id="starting_street" maxlength="100" /><br />
         <input type="text" name="start_comp" id="start_comp" maxlength="100"><br />
         Code postal:<input type="text" name="start_code" id="start_code" maxlength="10"><br />
 
@@ -39,7 +39,7 @@
         <input type="date" name="time2" id="time2" required><br />
     </div>
     <label for="seats">Siège(s) disponible(s): </label><br />
-    <input type="number" name="seats" id="seats" />
+    <input asp-for="Seats" type="number" name="seats" id="seats" min="1"/>
     <!--
     -->
     <div class="form-example">

@@ -42,9 +42,10 @@ namespace Travel_Express.Controllers
 
         [HttpPost]
         [Route("/TravelRegistery/ConfirmRegister", Name = "RegisterTravel")]
-        
+
         //public ActionResult ConfirmNewTravel()
-        public ActionResult ConfirmNewTravel([Bind("starting_street,start_comp,start_code,time1_h,time1, arrival_street,arrival_comp,arrival_code,time2_h,time2,seats")] Travel_Express.Models.NewTravelModel newTravel)
+        //public ActionResult ConfirmNewTravel([Bind("starting_street,start_comp,start_code,time1_h,time1, arrival_street,arrival_comp,arrival_code,time2_h,time2,seats")] Travel_Express.Models.NewTravelModel newTravel)
+        public ActionResult ConfirmNewTravel( Travel_Express.Models.NewTravelModel newTravel)
         {
             System.Diagnostics.Debug.WriteLine("There is:"+newTravel.Seats+" Seats for a travel going from "+newTravel.FromStreet);
             Travel_Express.Database.Address From = new Travel_Express.Database.Address();

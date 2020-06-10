@@ -13,7 +13,7 @@ namespace Travel_Express.Models
         }
 
        
-        public String FromStreet { get; set; }
+        public string FromStreet { get; set; }
         public String FromComp { get; set; }
         public String FromPostalCode { get; set; }
         public String time1 { get; set; }
