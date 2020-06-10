@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Travel_Express.Database;
@@ -54,13 +55,7 @@ namespace Travel_Express.Controllers
             return View();
         }
 
-        // GET: TravelRegisteryController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-
+        [Authorize]
         public IActionResult RegisterTravel()
         {
             System.Diagnostics.Debug.WriteLine("Function Used");
@@ -69,7 +64,7 @@ namespace Travel_Express.Controllers
 
         [HttpPost]
         [Route("/TravelRegistery/ConfirmRegister", Name = "RegisterTravel")]
-
+        [Authorize]
         //public ActionResult ConfirmNewTravel()
         //public async Task<ActionResult> ConfirmNewTravel([Bind("starting_street,start_comp,start_code,time1_h,time1, arrival_street,arrival_comp,arrival_code,time2_h,time2,seats")] Travel_Express.Models.NewTravelModel newTravel)
         public async Task<ActionResult> ConfirmNewTravel( Travel_Express.Models.NewTravelModel newTravel)
@@ -99,7 +94,7 @@ namespace Travel_Express.Controllers
             Travel_Express.Database.Travel travel = new Travel_Express.Database.Travel();
             travel.From = ((Travel_Express.Database.Address)bddFrom.Entity).IdAddress;
             travel.To = ((Travel_Express.Database.Address)bddTo.Entity).IdAddress;
-            travel.Driver = "dummy"; //TODO replace dummy value
+            travel.Driver = User.Identity.Name; //user email or name
             travel.Seats = newTravel.Seats;
             travel.TimeStart = newTravel.date1;
             travel.TimeEnd = newTravel.date2;
@@ -109,75 +104,14 @@ namespace Travel_Express.Controllers
             _context.Add(travel);
             try
             {
-                _context.SaveChanges();
-            }catch(Microsoft.EntityFrameworkCore.DbUpdateException exception)
+                await _context.SaveChangesAsync();
+                //_context.SaveChanges();
+            } catch (Microsoft.EntityFrameworkCore.DbUpdateException)
             {
-                Travel_Express.Database.Users driver = new Database.Users();
-                driver.Mail = "dummy";
-                _context.Add(driver);
-                _context.SaveChanges();
+                return RedirectToAction("RegisterTravel", "TravelRegistery");
             }
 
             return View();
-        }
-
-
-        
-        // POST: TravelRegisteryController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TravelRegisteryController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TravelRegisteryController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TravelRegisteryController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: TravelRegisteryController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }
