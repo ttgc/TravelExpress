@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Travel_Express.Database;
+using Travel_Express.Models;
 
 namespace Travel_Express.Controllers
 {
@@ -15,10 +18,50 @@ namespace Travel_Express.Controllers
         {
             _context = context;
         }
+
         // GET: TravelRegisteryController
-        public ActionResult Index()
+        public async Task<IActionResult> Index(string startCity, string endCity, DateTime? startTime)
         {
-            return View();
+            int occupiedSeats = _context.Booking.Sum(q => q.Seats).Value;
+            IQueryable<Travel> query = _context.Travel.Where(
+                s => s.Seats > occupiedSeats
+            );
+
+            if (startTime.HasValue) query = query.Where(s => s.TimeStart.GetValueOrDefault() >= startTime.Value);
+            if (!String.IsNullOrEmpty(startCity))
+            {
+                query = query.Where(s => _context.Address.Find(s.From).City.ToLower() == startCity.ToLower());
+            }
+            if (!String.IsNullOrEmpty(endCity))
+            {
+                query = query.Where(s => _context.Address.Find(s.To).City.ToLower() == endCity.ToLower());
+            }
+
+            return View(
+                await query.Select(s => new TravelListModel() {
+                    AvailableSeats = s.Seats.Value - occupiedSeats, TotalSeats = s.Seats.Value,
+                    Driver = s.Driver, StartTime = s.TimeStart.Value, EndTime = s.TimeEnd.Value,
+                    From = string.Format(
+                        "%d %s\n%s\n%s %s\n(%s) %s",
+                        s.FromNavigation.Number.GetValueOrDefault(0),
+                        s.FromNavigation.Street,
+                        s.FromNavigation.Complement,
+                        s.FromNavigation.PostalCode,
+                        s.FromNavigation.City,
+                        s.FromNavigation.State,
+                        s.FromNavigation.Country
+                    ), To = string.Format(
+                        "%d %s\n%s\n%s %s\n(%s) %s",
+                        s.ToNavigation.Number.GetValueOrDefault(0),
+                        s.ToNavigation.Street,
+                        s.ToNavigation.Complement,
+                        s.ToNavigation.PostalCode,
+                        s.ToNavigation.City,
+                        s.ToNavigation.State,
+                        s.ToNavigation.Country
+                    ), ID = s.IdTravel
+                }).ToListAsync()
+            );
         }
 
         // GET: TravelRegisteryController/Details/5
