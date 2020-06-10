@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Travel_Express.Database;
 using Travel_Express.Models;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Travel_Express.Controllers
 {
@@ -21,67 +25,72 @@ namespace Travel_Express.Controllers
             _context = context;
         }
 
-        // GET: Account/Create
+        // go to the sign in page
         public IActionResult Signin()
         {
             return View();
         }
 
+        // go to the log in page
         public IActionResult Login()
         {
             return View();
+        }
+
+        // log out
+        //[Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
+        public bool IsLogged()
+        {
+            return User.Identity.IsAuthenticated;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ValidateLogin([Bind("Mail,Password")] NewAccount account)
         {
+            //we check wether the user exists and has the same password
             var users = await _context.Users.FindAsync(account.Mail);
             if (users == null)
             {
-                return NotFound();
+                return RedirectToAction("Login");
             }
             if(users.PasswordHash == EncodePassword(account.Password))
             {
-                //login
-                return RedirectToAction("Login");
+                //Cookie Instanciation
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, account.Mail),
+                    new Claim(ClaimTypes.Email, account.Mail),
+                    //new Claim(ClaimTypes.Role, "Administrator"),
+                };
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    AllowRefresh = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                    IsPersistent = true,
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+                return RedirectToAction("Index", "Home");
             }
             else
             {
-                //logout
-                return NotFound();
+                return RedirectToAction("Login");
             }
         }
-
-        /*protected void isValidUser(object sender, EventArgs e)
-        {
-            int userId = 0;
-            string conn_str = "Data Source=localhost;Initial Catalog=Books;Integrated Security=True";
-            using (SqlConnection conn = new SqlConnection(conn_str))
-            {
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "USP_ValidateUser";
-                    cmd.Parameters.AddWithValue("@username", lgn.UserName);
-                    cmd.Parameters.AddWithValue("@password", lgn.Password);
-                    cmd.Connection = conn;
-                    conn.Open();
-                    userId = Convert.ToInt32(cmd.ExecuteScalar());
-                    conn.Close();
-                }
-                switch (userId)
-                {
-                    case -1:
-                        lgn.FailureText = "Wrong login information";
-                        break;
-
-                    default:
-                        FormsAuthentication.RedirectFromLoginPage(lgn.UserName, lgn.RememberMeSet);
-                        break;
-                }
-            }
-        }*/
 
         // POST: Account/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
@@ -132,91 +141,5 @@ namespace Travel_Express.Controllers
             }
             return sb.ToString();
         }
-
-        /*
-        // GET: Account/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var users = await _context.Users.FindAsync(id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-            return View(users);
-        }
-
-        // POST: Account/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Mail,PasswordHash,AcceptPet,AcceptSmoke,AcceptMusic,AcceptTalking,AcceptDeviation,AcceptEveryone")] Users users)
-        {
-            if (id != users.Mail)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(users);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsersExists(users.Mail))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(users);
-        }
-
-        // GET: Account/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var users = await _context.Users
-                .FirstOrDefaultAsync(m => m.Mail == id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-
-            return View(users);
-        }
-
-        // POST: Account/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var users = await _context.Users.FindAsync(id);
-            _context.Users.Remove(users);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsersExists(string id)
-        {
-            return _context.Users.Any(e => e.Mail == id);
-        }*/
     }
 }
