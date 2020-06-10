@@ -25,6 +25,36 @@ namespace Travel_Express.Controllers
 
         public IActionResult Privacy()
         {
+            
+            return View();
+        }
+
+        
+
+        /*[Route("/Home/ConfirmRegister", Name = "RegisterTravel")]
+        //public ActionResult Register([Bind("ID,Title,ReleaseDate,Genre,Price")] Travel_Express.Models.))
+        public IActionResult Register()
+        {
+            System.Diagnostics.Debug.WriteLine("Some Log");
+            return ConfirmNewTravel();
+        }
+
+        public IActionResult ConfirmNewTravel()
+        {
+            System.Diagnostics.Debug.WriteLine("Some Log");
+            return View();
+        }*/
+        
+        [HttpPost]
+        public async Task<IActionResult> Test( [Bind("dummy")] Travel_Express.Models.SimpleClassModel simpleInstance)
+        {
+            System.Diagnostics.Debug.WriteLine("Message: "+simpleInstance.dummy+", full:"+simpleInstance);
+            return View();
+        }
+
+        public IActionResult Test()
+        {
+       
             return View();
         }
 
