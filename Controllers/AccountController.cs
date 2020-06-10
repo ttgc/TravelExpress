@@ -13,9 +13,13 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Travel_Express.Controllers
 {
+    /// <summary>
+    /// This Class controls anything related to log in, log out or Sign in
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly Context _context;
@@ -26,7 +30,7 @@ namespace Travel_Express.Controllers
         }
 
         // go to the sign in page
-        public IActionResult Signin()
+        public IActionResult Signup()
         {
             return View();
         }
@@ -97,7 +101,7 @@ namespace Travel_Express.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ValidateSignin([Bind("Mail,Password")] NewAccount newAccount)
+        public async Task<IActionResult> ValidateSignup([Bind("Mail,Password")] NewAccount newAccount)
         {
             Users users = new Users() { Mail = newAccount.Mail, 
                                         PasswordHash = EncodePassword(newAccount.Password) };
@@ -120,7 +124,7 @@ namespace Travel_Express.Controllers
                 }
                 if (invalidUsername)
                 {
-                    return RedirectToAction("Signin");
+                    return RedirectToAction("Signup");
                 }
                 else
                 {

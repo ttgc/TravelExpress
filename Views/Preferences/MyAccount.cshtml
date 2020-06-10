@@ -1,0 +1,52 @@
+﻿@model Travel_Express.Models.Preferences
+
+@{
+    ViewData["Title"] = "Mon Compte";
+}
+
+<h4>Paramètres</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Save">
+            <div class="form-group">
+                <label asp-for="AcceptPet" class="control-label"></label>
+                <input asp-for="AcceptPet" class="form-control" />
+                <span asp-validation-for="AcceptPet" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcceptSmoke" class="control-label"></label>
+                <input asp-for="AcceptSmoke" class="form-control" />
+                <span asp-validation-for="AcceptSmoke" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcceptMusic" class="control-label"></label>
+                <input asp-for="AcceptMusic" class="form-control" />
+                <span asp-validation-for="AcceptMusic" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcceptTalking" class="control-label"></label>
+                <input asp-for="AcceptTalking" class="form-control" />
+                <span asp-validation-for="AcceptTalking" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcceptDeviation" class="control-label"></label>
+                <input asp-for="AcceptDeviation" class="form-control" />
+                <span asp-validation-for="AcceptDeviation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AcceptEveryone" class="control-label"></label>
+                <input asp-for="AcceptEveryone" class="form-control" />
+                <span asp-validation-for="AcceptEveryone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Appliquer" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
