@@ -21,35 +21,67 @@ namespace Travel_Express.Controllers
             _context = context;
         }
 
-        // GET: Account
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Users.ToListAsync());
-        }
-
-        // GET: Account/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var users = await _context.Users
-                .FirstOrDefaultAsync(m => m.Mail == id);
-            if (users == null)
-            {
-                return NotFound();
-            }
-
-            return View(users);
-        }
-
         // GET: Account/Create
         public IActionResult Signin()
         {
             return View();
         }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ValidateLogin([Bind("Mail,Password")] NewAccount account)
+        {
+            var users = await _context.Users.FindAsync(account.Mail);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            if(users.PasswordHash == EncodePassword(account.Password))
+            {
+                //login
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                //logout
+                return NotFound();
+            }
+        }
+
+        /*protected void isValidUser(object sender, EventArgs e)
+        {
+            int userId = 0;
+            string conn_str = "Data Source=localhost;Initial Catalog=Books;Integrated Security=True";
+            using (SqlConnection conn = new SqlConnection(conn_str))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "USP_ValidateUser";
+                    cmd.Parameters.AddWithValue("@username", lgn.UserName);
+                    cmd.Parameters.AddWithValue("@password", lgn.Password);
+                    cmd.Connection = conn;
+                    conn.Open();
+                    userId = Convert.ToInt32(cmd.ExecuteScalar());
+                    conn.Close();
+                }
+                switch (userId)
+                {
+                    case -1:
+                        lgn.FailureText = "Wrong login information";
+                        break;
+
+                    default:
+                        FormsAuthentication.RedirectFromLoginPage(lgn.UserName, lgn.RememberMeSet);
+                        break;
+                }
+            }
+        }*/
 
         // POST: Account/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
@@ -83,10 +115,10 @@ namespace Travel_Express.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home");
                 }
             }
-            return View(users);
+            return RedirectToAction("Login");
         }
 
         public string EncodePassword(string password)
@@ -101,44 +133,7 @@ namespace Travel_Express.Controllers
             return sb.ToString();
         }
 
-
-
-        // POST: Account/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Mail,PasswordHash,AcceptPet,AcceptSmoke,AcceptMusic,AcceptTalking,AcceptDeviation,AcceptEveryone")] Users users)
-        {
-            if (ModelState.IsValid)
-            {
-                bool invalidUsername = false;
-                try
-                {
-                    // checks if the data can be written
-                    _context.Add(users);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateException)
-                {
-                    invalidUsername = true;
-                }
-                catch (Npgsql.PostgresException)
-                {
-                    invalidUsername = true;
-                }
-                if (invalidUsername)
-                {
-                    return RedirectToAction("Signin");
-                }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            return View(users);
-        }
-
+        /*
         // GET: Account/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
@@ -222,6 +217,6 @@ namespace Travel_Express.Controllers
         private bool UsersExists(string id)
         {
             return _context.Users.Any(e => e.Mail == id);
-        }
+        }*/
     }
 }
