@@ -46,9 +46,15 @@ namespace Travel_Express.Controllers
         }*/
         
         [HttpPost]
-        public IActionResult Test( [Bind("dummy")] Travel_Express.Models.SimpleClassModel simpleInstance)
+        public async Task<IActionResult> Test( [Bind("dummy")] Travel_Express.Models.SimpleClassModel simpleInstance)
         {
             System.Diagnostics.Debug.WriteLine("Message: "+simpleInstance.dummy+", full:"+simpleInstance);
+            return View();
+        }
+
+        public IActionResult Test()
+        {
+       
             return View();
         }
 

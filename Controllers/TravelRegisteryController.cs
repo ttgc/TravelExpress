@@ -44,19 +44,25 @@ namespace Travel_Express.Controllers
         [Route("/TravelRegistery/ConfirmRegister", Name = "RegisterTravel")]
 
         //public ActionResult ConfirmNewTravel()
-        //public ActionResult ConfirmNewTravel([Bind("starting_street,start_comp,start_code,time1_h,time1, arrival_street,arrival_comp,arrival_code,time2_h,time2,seats")] Travel_Express.Models.NewTravelModel newTravel)
-        public ActionResult ConfirmNewTravel( Travel_Express.Models.NewTravelModel newTravel)
+        //public async Task<ActionResult> ConfirmNewTravel([Bind("starting_street,start_comp,start_code,time1_h,time1, arrival_street,arrival_comp,arrival_code,time2_h,time2,seats")] Travel_Express.Models.NewTravelModel newTravel)
+        public async Task<ActionResult> ConfirmNewTravel( Travel_Express.Models.NewTravelModel newTravel)
         {
             System.Diagnostics.Debug.WriteLine("There is:"+newTravel.Seats+" Seats for a travel going from "+newTravel.FromStreet);
             Travel_Express.Database.Address From = new Travel_Express.Database.Address();
             Travel_Express.Database.Address To = new Travel_Express.Database.Address();
+            From.Number = newTravel.FromNumber;
             From.Street = newTravel.FromStreet;
-            From.State = newTravel.FromComp;
+            From.Complement = newTravel.FromComp;
             From.PostalCode = newTravel.FromPostalCode;
+            From.City = newTravel.FromCity;
+            From.Country = newTravel.FromCountry;
 
+            To.Number = newTravel.ToNumber;
             To.Street = newTravel.ToStreet;
-            To.State = newTravel.ToComp;
+            To.Complement = newTravel.ToComp;
             To.PostalCode = newTravel.ToPostalCode;
+            To.City = newTravel.ToCity;
+            To.Country = newTravel.ToCountry;
 
             Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry bddFrom =_context.Add(From);
             Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry bddTo =_context.Add(To);
@@ -68,6 +74,8 @@ namespace Travel_Express.Controllers
             travel.To = ((Travel_Express.Database.Address)bddTo.Entity).IdAddress;
             travel.Driver = "dummy"; //TODO replace dummy value
             travel.Seats = newTravel.Seats;
+            travel.TimeStart = newTravel.date1;
+            travel.TimeEnd = newTravel.date2;
             /*System.DateTime start = new System.DateTime()
             travel.TimeStart = newTravel.date1;
             travel.TimeEnd = newTravel.date2;*/
