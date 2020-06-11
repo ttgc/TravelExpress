@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -8,15 +8,15 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Travel Express</h1>
     @if (isLogged)
     {
         string UserEmail = User.Identity.Name;
-        <p>You are logged ! @UserEmail </p>
+        <p>Vous êtes connecté ! @UserEmail </p>
     }
     else
     {
-        <p>Sadly, you are not logged</p>
+        <p>Malheureusement vous n'êtes pas connecté</p>
     }
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>Covoiturez facile, partagez vos trajets et gagnez de l'argent facilement</p>
 </div>
