@@ -104,32 +104,43 @@ namespace Travel_Express.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        public ActionResult DetailBook(int id, IFormCollection formFields)
+        {
+            return BookSeats(id, int.Parse(formFields["nb_Seats"]));
+        }
+
+        [Authorize]
         public ActionResult Book(int id)
+        {
+            return BookSeats(id, 1);
+        }
+        public ActionResult BookSeats(int id, int seats)
         {
             Booking book = new Booking();
             book.Author = User.Identity.Name;
             book.IdTravel = id;
-            book.Seats = 1;
+            book.Seats = seats;
             book.Pending = true;
             _context.Add(book);
             bool fail = true;
-            try { 
+            try
+            {
                 _context.SaveChanges();
                 fail = false;
             }
             catch (Microsoft.EntityFrameworkCore.DbUpdateException)
             {
-                
+
             }
 
-            
-            
-            if (!fail) ViewData["Message"] = "Votre voyage a bien été réservé!";
-            else ViewData["Message"] = "Vous ne pouvez pas reserver plusieurs fois le même voyage!";
-            
-            return View();
-        }
 
+
+            if (!fail) ViewData["Message"] = "Votre voyage a bien été réservé! \n Vous avez reservé "+seats+" sièges";
+            else ViewData["Message"] = "Vous ne pouvez pas reserver plusieurs fois le même voyage!";
+
+            return View("Book");
+        }
 
         [Authorize]
         public IActionResult RegisterTravel()

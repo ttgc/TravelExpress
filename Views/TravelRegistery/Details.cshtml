@@ -107,5 +107,8 @@
 
     </table>
     <h4>Sièges : @Model.AvailableSeats / @Model.TotalSeats</h4>
-    <a class="btn btn-success" asp-action="Book" asp-route-id="@Model.TravelModel.ID">Réserver</a>
+    <form method="post" id="form">
+        <input type="number" name="nb_Seats" id="nb_Seats"/>
+        <button class="btn btn-success" form="form" asp-action="DetailBook" asp-route-id="@Model.TravelModel.ID">Réserver</button>
+    </form>
 </div>
