@@ -20,12 +20,17 @@ namespace Travel_Express.Controllers
             _context = context;
         }
 
+        public int GetOccupiedSeats(Travel s)
+        {
+            return _context.Booking.Where(b => b.IdTravel == s.IdTravel).Sum(q => q.Seats).GetValueOrDefault();
+        }
+
         // GET: TravelRegisteryController
         public IActionResult Index(string startCity, string endCity, DateTime? startTime)
         {
-            int occupiedSeats = _context.Booking.Sum(q => q.Seats).Value;
+            //int occupiedSeats = _context.Booking.Where(s.ID).Sum(q => q.Seats).Value;
             IQueryable<Travel> query = _context.Travel.Where(
-                s => s.Seats > occupiedSeats
+                s => s.Seats.Value > _context.Booking.Where(b => b.IdTravel == s.IdTravel).Sum(q => q.Seats).GetValueOrDefault()
             );
 
             if (startTime.HasValue) query = query.Where(s => s.TimeStart.Value >= startTime.Value);
@@ -40,7 +45,8 @@ namespace Travel_Express.Controllers
 
             return View(
                 query.Select(s => new TravelListModel() {
-                    AvailableSeats = s.Seats.Value - occupiedSeats, TotalSeats = s.Seats.Value,
+                    AvailableSeats = s.Seats.Value - _context.Booking.Where(b => b.IdTravel == s.IdTravel).Sum(q => q.Seats).GetValueOrDefault(), 
+                    TotalSeats = s.Seats.Value,
                     Driver = s.Driver, StartTime = s.TimeStart.Value, EndTime = s.TimeEnd.Value,
                     From = $"{s.FromNavigation.Number.GetValueOrDefault(0)} {s.FromNavigation.Street}\n{s.FromNavigation.Complement}\n{s.FromNavigation.PostalCode} {s.FromNavigation.City}\n({s.FromNavigation.State}) {s.FromNavigation.Country}",
                     To = $"{s.ToNavigation.Number.GetValueOrDefault(0)} {s.ToNavigation.Street}\n{s.ToNavigation.Complement}\n{s.ToNavigation.PostalCode} {s.ToNavigation.City}\n({s.ToNavigation.State}) {s.ToNavigation.Country}",
@@ -49,11 +55,54 @@ namespace Travel_Express.Controllers
             );
         }
 
-        // GET: TravelRegisteryController/Details/5
-        public ActionResult Details(int id)
+        public Preferences GetPrefs(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return null;
+            }
+
+            var users = _context.Users.Find(id);
+            if (users == null)
+            {
+                return null;
+            }
+            Preferences p = new Preferences()
+            {
+                AcceptDeviation = users.AcceptDeviation.GetValueOrDefault(),
+                AcceptEveryone = users.AcceptEveryone.GetValueOrDefault(),
+                AcceptMusic = users.AcceptMusic.GetValueOrDefault(),
+                AcceptPet = users.AcceptPet.GetValueOrDefault(),
+                AcceptSmoke = users.AcceptSmoke.GetValueOrDefault(),
+                AcceptTalking = users.AcceptTalking.GetValueOrDefault(),
+            };
+            return p;
         }
+
+        public IActionResult Details(int id)
+        {
+            System.Diagnostics.Debug.WriteLine("Function Used " + id);
+            Travel s = _context.Travel.Find(id);
+            IQueryable<Travel> query = _context.Travel.Where(
+                s => s.IdTravel == id
+            );
+            int occupiedSeats = GetOccupiedSeats(s);
+            //without Select method, null exception are thrown from the "FromNavigation" values, hence the following code
+            TravelListModel trm = query.Select(s => new TravelListModel()
+            {
+                AvailableSeats = s.Seats.Value - occupiedSeats,
+                TotalSeats = s.Seats.Value,
+                Driver = s.Driver,
+                StartTime = s.TimeStart.Value,
+                EndTime = s.TimeEnd.Value,
+                From = $"{s.FromNavigation.Number.GetValueOrDefault(0)} {s.FromNavigation.Street}\n{s.FromNavigation.Complement}\n{s.FromNavigation.PostalCode} {s.FromNavigation.City}\n({s.FromNavigation.State}) {s.FromNavigation.Country}",
+                To = $"{s.ToNavigation.Number.GetValueOrDefault(0)} {s.ToNavigation.Street}\n{s.ToNavigation.Complement}\n{s.ToNavigation.PostalCode} {s.ToNavigation.City}\n({s.ToNavigation.State}) {s.ToNavigation.Country}",
+                ID = s.IdTravel
+            }).ToList()[0]; //only one instance should be stored here
+            TravelDetailsModel tdm = new TravelDetailsModel(GetPrefs(s.Driver), trm);
+            return View(tdm);
+        }
+
         [Authorize]
         public ActionResult Book(int id)
         {
@@ -76,7 +125,7 @@ namespace Travel_Express.Controllers
             
             
             if (!fail) ViewData["Message"] = "Votre voyage a bien été réservé!";
-            else ViewData["Message"] = "Vous ne pouvez pas reservé plusieurs fois le mêm voyage!";
+            else ViewData["Message"] = "Vous ne pouvez pas reserver plusieurs fois le même voyage!";
             
             return View();
         }
@@ -94,11 +143,11 @@ namespace Travel_Express.Controllers
         [Authorize]
         //public ActionResult ConfirmNewTravel()
         //public async Task<ActionResult> ConfirmNewTravel([Bind("starting_street,start_comp,start_code,time1_h,time1, arrival_street,arrival_comp,arrival_code,time2_h,time2,seats")] Travel_Express.Models.NewTravelModel newTravel)
-        public async Task<ActionResult> ConfirmNewTravel( Travel_Express.Models.NewTravelModel newTravel)
+        public async Task<ActionResult> ConfirmNewTravel( NewTravelModel newTravel)
         {
             System.Diagnostics.Debug.WriteLine("There is:"+newTravel.Seats+" Seats for a travel going from "+newTravel.FromStreet);
-            Travel_Express.Database.Address From = new Travel_Express.Database.Address();
-            Travel_Express.Database.Address To = new Travel_Express.Database.Address();
+            Address From = new Address();
+            Address To = new Address();
             From.Number = newTravel.FromNumber;
             From.Street = newTravel.FromStreet;
             From.Complement = newTravel.FromComp;
@@ -118,9 +167,9 @@ namespace Travel_Express.Controllers
 
             _context.SaveChanges();
 
-            Travel_Express.Database.Travel travel = new Travel_Express.Database.Travel();
-            travel.From = ((Travel_Express.Database.Address)bddFrom.Entity).IdAddress;
-            travel.To = ((Travel_Express.Database.Address)bddTo.Entity).IdAddress;
+            Travel travel = new Travel();
+            travel.From = ((Address)bddFrom.Entity).IdAddress;
+            travel.To = ((Address)bddTo.Entity).IdAddress;
             travel.Driver = User.Identity.Name; //user email or name
             travel.Seats = newTravel.Seats;
             travel.TimeStart = newTravel.date1;
