@@ -45,7 +45,7 @@ namespace Travel_Express.Controllers
 
             return View(
                 query.Select(s => new TravelListModel() {
-                    AvailableSeats = s.Seats.Value - _context.Booking.Where(b => b.IdTravel == s.IdTravel).Sum(q => q.Seats).GetValueOrDefault(), 
+                    AvailableSeats = s.Seats.Value - _context.Booking.Where(b => b.IdTravel == s.IdTravel).Sum(q => q.Seats).GetValueOrDefault(),
                     TotalSeats = s.Seats.Value,
                     Driver = s.Driver, StartTime = s.TimeStart.Value, EndTime = s.TimeEnd.Value,
                     From = $"{s.FromNavigation.Number.GetValueOrDefault(0)} {s.FromNavigation.Street}\n{s.FromNavigation.Complement}\n{s.FromNavigation.PostalCode} {s.FromNavigation.City}\n({s.FromNavigation.State}) {s.FromNavigation.Country}",
@@ -129,15 +129,21 @@ namespace Travel_Express.Controllers
                 _context.SaveChanges();
                 fail = false;
             }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException excep)
             {
 
             }
 
 
-
-            if (!fail) ViewData["Message"] = "Votre voyage a bien été réservé! \n Vous avez reservé "+seats+" sièges";
-            else ViewData["Message"] = "Vous ne pouvez pas reserver plusieurs fois le même voyage!";
+            if (!fail)
+            {
+                ViewData["Message"] = "Votre voyage a bien été réservé! \n Vous avez reservé " + seats + " sièges";
+                ViewData["Title"] = "Voyage réservé";
+            }else{
+                ViewData["Message"] = "Vous ne pouvez pas reserver plusieurs fois le même voyage!";
+                ViewData["Title"] = "Voyage Déjà réservé";
+            }
+        
 
             return View("Book");
         }
