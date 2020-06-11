@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Travel_Express.Models.NewTravelModel
+
+@{
     ViewData["Title"] = "Travel Registration";
 }
 <h1>@ViewData["Title"]</h1>
@@ -10,8 +12,7 @@
 
 
 
-@model Travel_Express.Models.NewTravelModel
-<form method="post" asp-route="RegisterTravel">
+<form asp-action="ConfirmNewTravel">
     <div class="Start">
         <label for="starting_street">Starting Point: </label><br />
         Addresse de Départ:<br />
