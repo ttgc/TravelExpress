@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Travel_Express.Models.TravelListModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Liste des Trajets disponibles</h1>
+<form asp-controller="TravelRegistery" asp-action="Index" method="get">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <label for="startCity">De</label>
+            <input type="text" name="startCity" id="startCity" class="form-control" placeholder="Ville de départ">
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="endCity">A</label>
+            <input type="text" name="endCity" id="endCity" class="form-control" placeholder="Ville de départ">
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-12">
+            <label for="startTime">Le</label>
+            <input type="date" name="startTime" id="startTime" class="form-control">
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-12" style="text-align: center;">
+            <button name="submit" id="submit" type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
+
+<br />
+<hr />
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Driver)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.From)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.To)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSeats)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalSeats)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Driver)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.From)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.To)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AvailableSeats)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalSeats)
+            </td>
+            <td>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.ID">Détails</a>
+            </td>
+        </tr>
+
+        }
+    </tbody>
+</table>

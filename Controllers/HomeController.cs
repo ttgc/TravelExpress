@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Travel_Express.Models;
@@ -25,6 +26,7 @@ namespace Travel_Express.Controllers
 
         public IActionResult Privacy()
         {
+            
             return View();
         }
 

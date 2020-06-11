@@ -1,0 +1,114 @@
+﻿@model Travel_Express.Models.TravelDetailsModel
+
+@{
+    ViewData["Title"] = "Détails";
+}
+
+    <h1>Détails du trajet</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Driver)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.From)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.To)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSeats)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalSeats)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.Driver)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.From)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.To)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AvailableSeats)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.TotalSeats)
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="text-center">
+    <table class="table">
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.AcceptPet)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AcceptPet)
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.AcceptSmoke)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AcceptSmoke)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.AcceptMusic)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AcceptMusic)
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.AcceptTalking)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AcceptTalking)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayNameFor(model => model.AcceptDeviation)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AcceptDeviation)
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.AcceptEveryone)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AcceptEveryone)
+            </td>
+        </tr>
+
+    </table>
+    <h4>Sièges : @Model.AvailableSeats / @Model.TotalSeats</h4>
+    <form method="post" id="form">
+        <input type="number" name="nb_Seats" id="nb_Seats"/>
+        <button class="btn btn-success" form="form" asp-action="DetailBook" asp-route-id="@Model.TravelModel.ID">Réserver</button>
+    </form>
+</div>
